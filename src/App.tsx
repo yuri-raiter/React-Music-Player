@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { GlobalStyle } from './styles/global'
+import { createServer } from 'miragejs'
+import { library } from './utils/data'
+import { TracksProvider } from './contexts/TracksContext'
+import { Library } from './components/Library'
+import { useState } from 'react'
+import Modal from 'react-modal'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { Main } from './components/Main'
+import { LibraryButton } from './components/LibraryButton'
+import { PlayProvider } from './contexts/IsPlayingContext'
+import { AudioProvider } from './contexts/AudioRefContext'
+
+createServer({
+   routes() {
+      this.namespace = 'api'
+
+      this.get('library', () => library)
+   }
+})
+
+Modal.setAppElement('#root');
+
+export function App() {
+   const [isLibraryOpen, setIsLibraryOpen] = useState(false)
+
+   function handleOpenLibrary() {
+      return setIsLibraryOpen(true)
+   }
+
+   function handleCloseLibrary() {
+      return setIsLibraryOpen(false)
+   }
+
+   return (
+      <div className="App">
+         <TracksProvider>
+            <LibraryButton handleOpenLibrary={handleOpenLibrary} />
+            <PlayProvider>
+               <AudioProvider>
+                  <Main />
+                  <Library isOpen={isLibraryOpen} onRequestClose={handleCloseLibrary} />
+               </AudioProvider>
+            </PlayProvider>
+         </TracksProvider>
+         <GlobalStyle />
+      </div>
+   );
 }
-
-export default App;
