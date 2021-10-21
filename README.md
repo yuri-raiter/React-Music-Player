@@ -1,4 +1,4 @@
-# React Food
+# React Music Player
 
 ### Web
 <img src='screenshots/01.PNG'>
